@@ -1,0 +1,18 @@
+#!/bin/bash
+if [ $1 -ne 0 ]
+then
+echo This module is for api version 0.
+exit
+fi
+
+list=(${7// / })
+
+if [ -z ${list[1]} ]
+then
+p=Tokyo
+else
+p=${list[1]}
+fi
+
+printf '> '
+curl -s wttr.in/$p?format=3

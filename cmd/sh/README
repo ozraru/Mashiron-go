@@ -1,0 +1,79 @@
+**ENG:**
+~~WARNING: Broken eng elsewhere lol
+ Grammar? 410 Gone.~~
+**TL;DR:**
+```
+Container(and bash)-based userscript runner.
+Put your prefix before each command.
+```
+
+Usrge:
+
+ **sh.add:** **`Add some new command.`**
+
+ **Options:**
+  **`--no-cache`**  Set this if your command has diffrent outputs for requests with same strings. 
+
+ sh.add <name>
+ \`\`\`sh
+ <Your script here>
+ \`\`\`
+ Ex:
+ sh.add echo
+ \`\`\`sh
+ #!/bin/sh
+ # Simple hello world
+ echo hello world!
+ \`\`\`
+
+**sh.info:** **`Shows infos about command.`**
+```
+sh.info <name>
+Ex: sh.info echo
+```
+**sh.rm:** **`Removes command.`**
+```
+sh.rm <name>
+Ex: sh.rm echo
+```
+**sh.ls:** **`List of commands.`**
+```
+sh.ls <Option:page>
+Ex: sh.ls 1
+```
+**sh.hook.add:** **`Adds hook.`**
+```
+Hooks trigger the command if their regex match with request.
+sh.hook.add <RegEx> <Cmd>
+Ex: sh.hook.add . echo 
+//Triggers with all strings WTF
+```
+**sh.hook.rm:** **`Removes hook.`**
+```
+sh.hook.rm <RegEx>
+Ex: sh.hook.rm .
+```
+**sh.hook.ls:** **`List of hooks.`**
+```
+sh.hook.ls <Option:page>
+Ex: sh.hook.ls 1
+```
+**sh.<cmd>**: **`Triggers UserScripts.**`
+```
+sh.<cmd> <args>
+Ex: sh.echo discord
+```
+```
+This module is brought to you by:
+hayabusa2
+with:
+golang(and pkgs in mashiron +)
+go.etcd.io/bbolt
+```
+```
+Mashiron is written by:
+hayabusa2
+with:
+golang
+gopkg.in/ini.v1
+```

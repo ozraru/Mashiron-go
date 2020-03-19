@@ -1,0 +1,3 @@
+#!/bin/sh
+echo Pong!
+ping -c 1 discordapp.com

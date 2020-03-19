@@ -1,0 +1,21 @@
+#!/bin/bash
+cd "$(dirname "$0")"
+if [ $1 -ne 0 ]
+then
+echo This module is for api version 0.
+exit
+fi
+
+a=($7)
+
+if [ ${a[1]} = "stage" ]
+then
+p="stage"
+else
+p="help"
+fi
+
+b=("${a[@]:2}")
+s="$(IFS=" ";echo "${b[*]}")"
+
+./$p.sh $s
