@@ -4,7 +4,7 @@
 . mashironrc
 rm -r $VM
 mkdir $VM
-pacstrap -i -c $VM bash busybox
+pacstrap -ic $VM --noconfirm bash busybox
 systemd-nspawn -D $VM /usr/bin/busybox --install
 
 #container.sh

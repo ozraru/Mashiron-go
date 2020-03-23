@@ -1,0 +1,38 @@
+```
+Config editor.
+PLEASE SET ROLE ID TO priv_conf BEFORE USING MASHIRON!
+Put your prefix before each command.
+```
+
+Usrge(Get):
+
+**conf get** **`Get config.`**
+```
+conf get <group> <config>
+Ex: conf get core prefix
+```
+
+**conf default** **`Show default config file.`**
+
+**conf cat** **`Print current config file.`**
+
+Usrge(Set):
+
+**conf set** **`Set config.`**
+```
+conf set <group> <config> <value>
+Ex: conf set core prefix m.
+```
+
+**conf group add** **`Add conf group.`**
+```
+conf group add <group>
+Ex: conf group add conf
+```
+
+**conf group rm** **`Delete conf group.`**
+```
+conf group rm <group>
+Ex: conf group rm conf
+```
+

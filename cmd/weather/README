@@ -1,0 +1,6 @@
+**How's the weather today?**
+`Put prefix before weather command.`
+```
+weather <Option:place>
+Ex: weather tokyo
+```

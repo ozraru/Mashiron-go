@@ -1,0 +1,8 @@
+`Print help.`
+
+Usrge:
+
+```
+help <module>
+Ex: help help
+```

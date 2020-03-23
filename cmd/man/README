@@ -1,0 +1,29 @@
+```
+Prints man file.
+Use with sh module.
+```
+
+Usrge:
+
+**man.add:** **`Add new man.`**
+
+ man.add <name>
+ \`\`\`
+ <Your script here>
+ \`\`\`
+ Ex:
+ man.add echo
+ \`\`\`sh
+ Simple hello world
+ \`\`\`
+
+**man.rm:** **`Delete man.`**
+
+```
+man.rm <name>
+Ex: man.rm echo
+```
+
+**man.<name>:** **`Print man.`**
+
+`Ex: man.echo`

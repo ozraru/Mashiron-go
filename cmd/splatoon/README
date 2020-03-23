@@ -1,7 +1,28 @@
-スプラトゥーンの各種情報を有志Apiより取得します。
-前にプレフィクスをつけて解釈して下さい。
-splatoon stage:ステージを取得します。
+**ja**
+`スプラトゥーンの各種情報を有志Apiより取得します。
+前にプレフィクスをつけて解釈して下さい。`
+
+**splatoon stage:** **`ステージを取得します。`**
 何も指定されていなければ現在のガチマを表示します。
+
+```
 -r レギュラー
 -l リーグマッチ
 -n 次の時間帯
+Ex: splatoon stage -r -n
+```
+
+**en**
+`Get realtime info about splatoon2!`
+
+**splatoon stage:** **`Get current or next stages.`**
+Default is current Gachi match.
+
+```
+-r regular match
+-l league match
+-n next stages
+Ex: splatoon stage -r -n
+```
+
+`This module is currently WIP.`

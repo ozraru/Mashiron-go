@@ -13,4 +13,5 @@
 
 # data dir
 data
-
+bin
+*.tar.xz

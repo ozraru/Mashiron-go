@@ -1,0 +1,11 @@
+[Unit]
+Description = Mashiron daemon
+
+[Service]
+ExecStart = /opt/Mashiron/mashiron.sh
+WorkingDirectory= /opt/Mashiron
+Restart = on-failure
+Type = simple
+
+[Install]
+WantedBy = multi-user.target
