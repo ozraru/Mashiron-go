@@ -44,7 +44,7 @@ func main() {
 			if req_split[1] == "get" || len(req_split) == 4 {
 				s := c.Section(req_split[2]).Key(req_split[3]).String()
 				if s == "" {
-					fmt.Println("> There were some errors while getting conf.(Mayebe not found?)")
+					fmt.Println("> There were some errors while getting conf.(Maybe not found?)")
 				} else {
 					fmt.Println("> " + s)
 				}
@@ -98,7 +98,7 @@ func main() {
 				}
 			}
 		} else {
-			fmt.Println("> This is Mashiron conf module. read man for details, type " + conf.prefix + "conf default for examples.")
+			fmt.Println("> This is Mashiron conf module. read help for details, type " + conf.prefix + "conf default for examples.")
 		}
 	}
 }

@@ -37,7 +37,7 @@ func main() {
 	if strings.HasPrefix(req.CONTENT, conf.prefix+"help") {
 		req_split := strings.SplitN(req.CONTENT, " ", 2)
 		if len(req_split) != 2 {
-			fmt.Print(">>> Welcome to Mashiron!\nIf you want to read help of each commands, type module name after this command!\nCurrently enabled commands is: ", conf.modules)
+			fmt.Print(">>> Welcome to Mashiron!\nIf you want to read help of each commands, type module name after this command!\nCurrently enabled commands are: ", conf.modules)
 			return
 		} else {
 			path := "cmd/" + req_split[1] + "/README"

@@ -111,7 +111,7 @@ func setup(dir *Dir) bool {
 	fmt.Println("Mashiron setop:core")
 	err := os.MkdirAll(dir.cmddatadir, 500)
 	if err != nil {
-		fmt.Println("WTF>>Can't create data dir...Aborting")
+		fmt.Println("WTF>>Can't create data dir...Aborting.")
 		fmt.Println(err)
 		return false
 	} else {
@@ -125,7 +125,7 @@ func setup(dir *Dir) bool {
 	} else {
 		fmt.Println("DONE>>Copied default files.")
 	}
-	fmt.Println("DONE>>Core setup completed")
+	fmt.Println("DONE>>Core setup completed.")
 	return true
 }
 
@@ -177,7 +177,7 @@ func start(req *Request, dir *Dir, conf *Confdata, ishook bool, cmd string) {
 	7:CONTENT
 	*/
 	if strings.Contains(cmd, "..") {
-		fmt.Println(">> WARNING:DON'Tdenying...")
+		//For security
 		return
 	}
 	cmdrun := exec.Command(dir.cmddir+cmd+"/"+cmd, "0", strconv.FormatBool(ishook), req.API, req.PRIV, req.ROOM, req.USER, req.CONTENT)

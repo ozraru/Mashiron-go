@@ -2,8 +2,8 @@
 Description = Mashiron daemon
 
 [Service]
-ExecStart = /opt/Mashiron/mashiron.sh
-WorkingDirectory= /opt/Mashiron
+ExecStart = /opt/Mashiron-go/bin/mashiron.sh
+WorkingDirectory= /opt/Mashiron-go
 Restart = on-failure
 Type = simple
 

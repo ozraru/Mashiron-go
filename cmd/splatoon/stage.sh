@@ -34,6 +34,7 @@ echo Downloading...
 j=$(curl -sH 'User-Agent: DiscordBot/1.0 (email public.yk@outlook.com)' https://spla2.yuu26.com/$r/$t)
 echo $j > $d/$p$r$t
 fi
+#Example of output
 #j='{"result":[{"rule":"ナワバリバトル","rule_ex":{"key":"turf_war","name":"ナワバリバトル","statink":"nawabari"},"maps":["ショッツル鉱山","タチウオパーキング"],"maps_ex":[{"id":17,"name":"ショッツル鉱山","image":"https://app.splatoon2.nintendo.net/images/stage/828e49a8414a4bbc0a5da3e61454ab148a9f4063.png","statink":"shottsuru"},{"id":8,"name":"タチウオパーキング","image":"https://app.splatoon2.nintendo.net/images/stage/96fd8c0492331a30e60a217c94fd1d4c73a966cc.png","statink":"tachiuo"}],"start":"2020-03-18T09:00:00","start_utc":"2020-03-18T00:00:00+00:00","start_t":1584489600,"end":"2020-03-18T11:00:00","end_utc":"2020-03-18T02:00:00+00:00","end_t":1584496800}]}'
 j2=$(echo $j | jq ".result")
 j3=$(echo $j2 | jq ".[0]")

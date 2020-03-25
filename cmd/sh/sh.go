@@ -130,18 +130,18 @@ func cmd(req *Request, conf *Conf, dir *Dir) {
 		//someone calls me
 		if check(req, &conf.priv_edit) {
 			if strings.HasPrefix(req.CONTENT, conf.prefix+"sh.add ") {
-				//add command
+				//add script
 				req_split := strings.SplitN(req.CONTENT, " ", 4)
 				req_splitline := strings.TrimLeft(strings.SplitN(req.CONTENT, "\n", 2)[0], conf.prefix+"sh.add ")
 				req_splitline = strings.TrimSuffix(req_splitline, "```sh")
 				req_splitline = strings.TrimSuffix(req_splitline, "```")
 				req_splitline = strings.TrimSuffix(req_splitline, " ")
 				if strings.HasSuffix(req_split[0], "\n") || req_splitline == "" {
-					fmt.Println("> Please include command name before file.")
+					fmt.Println("> Please include script name before file.")
 					return
 				}
 				if db_cmd_exists(&req_splitline, db) {
-					fmt.Println("> Command already exists.")
+					fmt.Println("> Script already exists.")
 				} else {
 					index := 2
 					cmd := Cmd{
@@ -177,7 +177,7 @@ func cmd(req *Request, conf *Conf, dir *Dir) {
 				}
 			}
 			if strings.HasPrefix(req.CONTENT, conf.prefix+"sh.rm ") {
-				//delete command
+				//delete script
 				req_split := strings.SplitN(req.CONTENT, " ", 2)
 				if len(req_split) != 2 {
 					fmt.Println("> Request split error.")
@@ -201,16 +201,16 @@ func cmd(req *Request, conf *Conf, dir *Dir) {
 					info := db_cmd_info(&req_split[1], db)
 					fmt.Printf(">>> Name: `" + info.name + "`\nBy: `" + info.author + "`\nAt: `" + info.time + "`\nCache: `" + info.cache + "`\n File:```sh\n" + info.file + "```\n")
 				} else {
-					fmt.Println("> No such command in database.")
+					fmt.Println("> No such script in database.")
 				}
 			}
 			if strings.HasPrefix(req.CONTENT, conf.prefix+"sh.ls") {
 				list := db_cmd_list(db)
 				if len(list) == 0 {
-					fmt.Println("> There are no commands in database.")
+					fmt.Println("> There are no script in database.")
 					return
 				}
-				fmt.Println("> There are " + strconv.Itoa(len(list)) + " commands in database.")
+				fmt.Println("> There are " + strconv.Itoa(len(list)) + " command(s) in database.")
 				req_split := strings.SplitN(req.CONTENT, " ", 2)
 				if len(list) > 10 {
 					page := 1
@@ -250,7 +250,7 @@ func cmd(req *Request, conf *Conf, dir *Dir) {
 							fmt.Println("Cmd: `" + req_split[2] + "`")
 						}
 					} else {
-						fmt.Println("> No such command in database.")
+						fmt.Println("> No such script in database.")
 					}
 				}
 				if strings.HasPrefix(req.CONTENT, conf.prefix+"sh.hook.rm ") {
@@ -269,10 +269,10 @@ func cmd(req *Request, conf *Conf, dir *Dir) {
 					//hook listing
 					list := db_gen_list("hook", db)
 					if len(list) == 0 {
-						fmt.Println("> There are no regexs in database.")
+						fmt.Println("> There are no regex in database.")
 						return
 					}
-					fmt.Println("> There are " + strconv.Itoa(len(list)) + " regexs in database.")
+					fmt.Println("> There are " + strconv.Itoa(len(list)) + " regex(s) in database.")
 					req_split := strings.SplitN(req.CONTENT, " ", 2)
 					if len(list) > 10 {
 						page := 1
@@ -517,6 +517,7 @@ func db_default_create(defaultarr []string, db *bolt.DB) {
 }
 
 func vm(req *string, dir *Dir, cmd *Cmd) {
+	//Systemd-nspawn needs root priv.
 	c := exec.Command("sudo", append([]string{dir.cmddir + "run.sh", cmd.file, ""}, strings.Split(*req, " ")...)...)
 	c.Stdout = os.Stdout
 	c.Stderr = os.Stdout

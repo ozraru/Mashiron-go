@@ -1,5 +1,6 @@
 #!/bin/bash
 
+#Build core
 echo "BUILD >>>>> core:cmd "
 cd "$(dirname "$0")"
 make
@@ -12,6 +13,7 @@ else
     exit 1
 fi
 
+#Build modules
 for d in */
     do
     echo " BUILD >>>>> $d "

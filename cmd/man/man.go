@@ -158,10 +158,10 @@ func cmd(req Request, conf Conf, dir Dir) {
 			if strings.HasPrefix(req.CONTENT, conf.prefix+"man.ls") {
 				list := db_cmd_list(db)
 				if len(list) == 0 {
-					fmt.Println("> There are no mans in database.")
+					fmt.Println("> There are no man in database.")
 					return
 				}
-				fmt.Println("> There are " + strconv.Itoa(len(list)) + " mans in database.")
+				fmt.Println("> There are " + strconv.Itoa(len(list)) + " man(s) in database.")
 				req_split := strings.SplitN(req.CONTENT, " ", 2)
 				if len(list) > 10 {
 					page := 1

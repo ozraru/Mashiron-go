@@ -16,6 +16,7 @@ type Config struct {
 	Token string
 }
 
+//Read config file and start discord routine
 func main() {
 	fmt.Println("Loading config...")
 	c, err := ini.Load("mashiron.ini")
@@ -27,7 +28,6 @@ func main() {
 		Token: c.Section("token").Key("secret").String(),
 	}
 	fmt.Println("Connecting to discord...")
-	//Discordのセッションを作成
 	discord, err := discordgo.New()
 	discord.Token = Cnf.Token
 	if err != nil {
@@ -36,18 +36,18 @@ func main() {
 		return
 	}
 
-	discord.AddHandler(onMessageCreate) //全てのWSAPIイベントが発生した時のイベントハンドラを追加
-	// websocketを開いてlistening開始
+	discord.AddHandler(onMessageCreate)
 	err = discord.Open()
 	if err != nil {
 		fmt.Println(err)
 		return
 	}
 	fmt.Println("Listening...")
-	<-stopBot //プログラムが終了しないようロック
+	<-stopBot
 	return
 }
 
+//Start core cmd when recieved message
 func onMessageCreate(session *discordgo.Session, message *discordgo.MessageCreate) {
 	channel, err := session.State.Channel(message.ChannelID) //チャンネル取得
 	if err != nil {
@@ -61,8 +61,9 @@ func onMessageCreate(session *discordgo.Session, message *discordgo.MessageCreat
 	sendMessage(session, channel, string(out))
 }
 
-//メッセージを送信する関数
+//Send message
 func sendMessage(s *discordgo.Session, c *discordgo.Channel, msg string) {
+	//Don't send enpty message-will be denyed
 	if msg == "" {
 		return
 	}
