@@ -3,6 +3,11 @@
 
 . mashironrc
 rm -r $VM
+if [ $(ls ../../bin/cmd/sh | grep vm) = "vm" ]
+then
+    echo Skipping VM
+    exit
+fi
 mkdir $VM
 pacstrap -ic $VM --noconfirm bash busybox
 systemd-nspawn -D $VM /usr/bin/busybox --install
@@ -24,3 +29,4 @@ then
 fi
 EOF
 chmod +x $VM/usr/container.sh
+sudo mv vm ../../bin/cmd/sh/vm

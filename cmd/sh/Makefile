@@ -12,7 +12,6 @@ get:
 mv:
 	mkdir -p ../../bin/cmd/sh
 	mv sh ../../bin/cmd/sh/sh
-	sudo mv vm ../../bin/cmd/sh/vm
 	cp init.sh ../../bin/cmd/sh/init.sh
 	cp mashironrc ../../bin/cmd/sh/mashironrc
 	cp run.sh ../../bin/cmd/sh/run.sh
