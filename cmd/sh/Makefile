@@ -2,6 +2,7 @@ all: get test build mv
 test:
 	go test
 build:
+	mkdir -p ../../bin/cmd/sh
 	go build
 	sudo bash init.sh
 clean:
@@ -10,7 +11,6 @@ get:
 	go get gopkg.in/ini.v1
 	go get go.etcd.io/bbolt
 mv:
-	mkdir -p ../../bin/cmd/sh
 	mv sh ../../bin/cmd/sh/sh
 	cp init.sh ../../bin/cmd/sh/init.sh
 	cp mashironrc ../../bin/cmd/sh/mashironrc

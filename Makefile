@@ -6,7 +6,7 @@ build:
 	bash cmd/mkall.sh
 clean:
 	go clean
-	sudo rm -rf bin
+#	sudo rm -rf bin
 get:
 	go get gopkg.in/ini.v1
 	go get github.com/bwmarrin/discordgo
