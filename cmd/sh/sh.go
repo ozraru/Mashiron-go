@@ -133,6 +133,7 @@ func cmd(req *Request, conf *Conf, dir *Dir) {
 				//add script
 				req_split := strings.SplitN(req.CONTENT, " ", 4)
 				req_splitline := strings.TrimPrefix(strings.SplitN(req.CONTENT, "\n", 2)[0], conf.prefix+"sh.add ")
+				req_splitline = strings.TrimSuffix(req_splitline, "```bash")
 				req_splitline = strings.TrimSuffix(req_splitline, "```sh")
 				req_splitline = strings.TrimSuffix(req_splitline, "```")
 				req_splitline = strings.TrimSuffix(req_splitline, " ")
