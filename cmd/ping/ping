@@ -1,3 +1,5 @@
-#!/bin/sh
-echo Pong!
-ping -c 1 discordapp.com
+#!/bin/bash
+echo '```'
+cat cmd/ping/ascii.txt
+echo '```'
+ping -c 1 discordapp.com | grep "discordapp.com ping" -A3

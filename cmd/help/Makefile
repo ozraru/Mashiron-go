@@ -11,3 +11,4 @@ mv:
 	mkdir -p ../../bin/cmd/help
 	mv help ../../bin/cmd/help/help
 	cp README ../../bin/cmd/help/README
+	cp mashiron.png ../../bin/cmd/help/mashiron.png

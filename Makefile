@@ -16,5 +16,8 @@ mv:
 	cp -r skel bin/skel
 	cp mashiron.ini bin/
 	cp mashiron.service bin/
+	cp mashiron.sh bin/
+	cp ascii.txt bin/
 release: clean all
 	sudo tar -Jcvf Mashiron-go.tar.xz bin/*
+
