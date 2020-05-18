@@ -44,7 +44,7 @@ func ExecModule(request *Request, dir *Dir, ishook bool, cmd string) string {
 		r := run(dir.CmdDir+cmd+"/"+cmd, []string{RequestToJSON(request)})
 		return r
 	default:
-		fmt.Fprint(os.Stderr, "FATAL> Command has been called but there are no definition in modules.go!")
+		fmt.Fprint(os.Stderr, "FATAL> Command "+cmd+" has been called but there are no definition in modules.go!")
 		return ResultToJSON(&Result{
 			Attachments: nil,
 			Content:     "> Fatal error occurred.Please contact to bot administrator!",

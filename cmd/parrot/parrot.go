@@ -24,6 +24,9 @@ func main() {
 				}))
 				return
 			case 2:
+				if strings.Contains(s[1],"..") {
+					return
+				}
 				if Exists(d.CmdDir+"parrots/"+s[1]+"parrot.gif") {
 					fmt.Print(mashiron.ResultToJSON(&mashiron.Result{
 						Attachments: []string{d.CmdDir+"parrots/"+s[1]+"parrot.gif"},
