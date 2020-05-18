@@ -18,6 +18,7 @@ const (
 	Command_ping     string = "ping"
 	Command_splatoon string = "splatoon"
 	Command_weather  string = "weather"
+	Command_parrot string = "parrot"
 )
 
 func ExecModule(request *Request, dir *Dir, ishook bool, cmd string) string {
@@ -39,7 +40,7 @@ func ExecModule(request *Request, dir *Dir, ishook bool, cmd string) string {
 			Attachments: nil,
 			Content:     r,
 		})
-	case Command_sh, Command_conf, Command_help, Command_man:
+	case Command_sh, Command_conf, Command_help, Command_man, Command_parrot:
 		r := run(dir.CmdDir+cmd+"/"+cmd, []string{RequestToJSON(request)})
 		return r
 	default:

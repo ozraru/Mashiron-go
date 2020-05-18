@@ -3,74 +3,64 @@ package main
 import (
 	"fmt"
 	"io/ioutil"
+	"mashironsrv.visualstudio.com/Public/_git/Mashiron-go/mashiron"
 	"os"
 	"strings"
 
 	"gopkg.in/ini.v1"
 )
 
-type Request struct {
-	version string
-	API     string
-	ROOM    string
-	USER    string
-	PRIV    []string
-	CONTENT string
-}
-type Dir struct {
-	roomdir    string
-	cmddatadir string
-}
 type Conf struct {
 	priv_conf []string
 	prefix    string
 }
 
 func main() {
-	req := parse()
-	if req.version != "0" {
-		fmt.Println("Ask bot admin to update me, This is V0 and request is " + req.version)
+	req := mashiron.JSONToRequest(&os.Args[1])
+	if req.Version != 0 {
+		fmt.Fprint(os.Stderr,"Version mismatch!")
 		return
 	}
-	dir := dirstr(req)
+	dir := mashiron.GetDirList(&req,"conf")
 	conf := parseconf(dir)
-	if strings.HasPrefix(req.CONTENT, conf.prefix+"conf") {
-		req_split := strings.SplitN(req.CONTENT, " ", 5)
-		if len(req_split) > 1 && check(req, conf.priv_conf) {
-			c, err := ini.Load(dir.roomdir + "user.ini")
+	if strings.HasPrefix(req.Content, conf.prefix+"conf") {
+		var ans string
+		req_split := strings.SplitN(req.Content, " ", 5)
+		if len(req_split) > 1 && mashiron.CheckPrivileges(&req, &conf.priv_conf) {
+			c, err := ini.Load(dir.RoomDir + "user.ini")
 			if err != nil {
-				fmt.Println(err)
+				fmt.Fprint(os.Stderr,err.Error())
 			}
 			if req_split[1] == "get" || len(req_split) == 4 {
 				s := c.Section(req_split[2]).Key(req_split[3]).String()
-				if s == "" {
-					fmt.Println("> There were some errors while getting conf.(Maybe not found?)")
+				if s == ""  {
+					ans += "> There were some errors while getting conf.(Maybe not found?)\n"
 				} else {
-					fmt.Println("> " + s)
+					ans += "> " + s + "\n"
 				}
 			}
 			if req_split[1] == "set" {
 				v := strings.Join(req_split[4:], " ")
 				c.Section(req_split[2]).Key(req_split[3]).SetValue(v)
-				err := c.SaveTo(dir.roomdir + "user.ini")
+				err := c.SaveTo(dir.RoomDir + "user.ini")
 				if err != nil {
-					fmt.Println("> " + err.Error())
+					fmt.Fprint(os.Stderr,err.Error())
 				} else {
-					fmt.Println("> Set OK")
+					ans += "> Set OK\n"
 				}
 			}
 			if req_split[1] == "group" || len(req_split) == 4 {
 				if req_split[2] == "add" {
 					_, err := c.NewSection(req_split[3])
 					if err != nil {
-						fmt.Println(err.Error())
+						fmt.Fprint(os.Stderr,err.Error())
 					} else {
-						fmt.Println("Created " + req_split[3] + " .")
+						ans+="Created " + req_split[3] + " .\n"
 					}
 				}
 				if req_split[1] == "rm" {
 					c.DeleteSection(req_split[2])
-					fmt.Println("Deleted " + req_split[2] + " .")
+					ans+="Deleted " + req_split[2] + " .\n"
 				}
 			}
 			if req_split[1] == "default" {
@@ -79,51 +69,33 @@ func main() {
 				if err == nil {
 					b, err := ioutil.ReadFile(path)
 					if err != nil {
-						fmt.Println("> ERROR: " + err.Error())
+						fmt.Fprint(os.Stderr,err.Error())
 					}
-					lines := ">>> " + string(b)
-					fmt.Print(lines)
+					ans+=">>> " + string(b)
 				}
 			}
 			if req_split[1] == "cat" {
-				path := dir.roomdir + "user.ini"
+				path := dir.RoomDir + "user.ini"
 				_, err := os.Stat(path)
 				if err == nil {
 					b, err := ioutil.ReadFile(path)
 					if err != nil {
-						fmt.Println("> ERROR: " + err.Error())
+						fmt.Fprint(os.Stderr,err.Error())
 					}
-					lines := ">>> " + string(b)
-					fmt.Print(lines)
+					ans += ">>> " + string(b)
 				}
 			}
 		} else {
-			fmt.Println("> This is Mashiron conf module. read help for details, type " + conf.prefix + "conf default for examples.")
+			ans+="> This is Mashiron conf module. read help for details, type " + conf.prefix + "conf default for examples."
 		}
+		fmt.Print(mashiron.ResultToJSON(&mashiron.Result{
+			Attachments: nil,
+			Content:     ans,
+		}))
 	}
 }
-func parse() Request {
-	priv := strings.Split(os.Args[4], ",")
-	req := Request{
-		version: os.Args[1],
-		API:     os.Args[3],
-		ROOM:    os.Args[5],
-		USER:    os.Args[6],
-		PRIV:    priv,
-		CONTENT: os.Args[7],
-	}
-	return req
-}
-func dirstr(req Request) Dir {
-	roomdir := "data/" + req.API + "/" + req.ROOM + "/"
-	cmddir := "cmd/man/"
-	return Dir{
-		roomdir:    roomdir,
-		cmddatadir: roomdir + cmddir,
-	}
-}
-func parseconf(dir Dir) Conf {
-	c, err := ini.Load(dir.roomdir + "user.ini")
+func parseconf(dir mashiron.Dir) Conf {
+	c, err := ini.Load(dir.RoomDir + "user.ini")
 	if err != nil {
 		fmt.Println(err)
 	}
@@ -131,17 +103,4 @@ func parseconf(dir Dir) Conf {
 		prefix:    c.Section("core").Key("prefix").String(),
 		priv_conf: c.Section("core").Key("priv_conf").Strings(" "),
 	}
-}
-func check(req Request, privs []string) bool {
-	if len(privs) == 0 {
-		return true
-	}
-	for _, priv := range privs {
-		for _, req_priv := range req.PRIV {
-			if req_priv == priv {
-				return true
-			}
-		}
-	}
-	return false
 }
