@@ -203,7 +203,7 @@ func cmd(req *mashiron.Request, conf *Conf, dir *mashiron.Dir) {
 					req_split := strings.SplitN(req.Content, " ", 3)
 					if len(req_split) != 3 {
 						answer += "> Request split error."
-					} else if mashiron.DB_IfBucketExists("hook", dir, req_split[2]) {
+					} else if mashiron.DB_IfBucketExists("cmd", dir, req_split[2]) {
 						_, err := regexp.Compile(req_split[1])
 						if err != nil {
 							answer += "> Regex error.\n" + err.Error()
