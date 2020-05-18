@@ -69,8 +69,8 @@ func cmd(req *mashiron.Request, conf *Conf, dir *mashiron.Dir) {
 	if req.Ishook {
 		for _, i := range mashiron.DB_Regex("hook",req.Content,dir) {
 			//run
-			if mashiron.DB_IfBucketExists("sh",dir,i) {
-				b := mashiron.DB_GetBucket("sh", dir, i, []string{"author", "time", "file", "cache"})
+			if mashiron.DB_IfBucketExists("cmd",dir,i) {
+				b := mashiron.DB_GetBucket("cmd", dir, i, []string{"author", "time", "file", "cache"})
 				answer += vm(&req.Content, dir, &Cmd{
 					name:   i,
 					author: b[0],
@@ -97,7 +97,7 @@ func cmd(req *mashiron.Request, conf *Conf, dir *mashiron.Dir) {
 					answer += "> Please include script name before file."
 					return
 				}
-				if mashiron.DB_IfBucketExists("sh", dir, req_splitline) {
+				if mashiron.DB_IfBucketExists("cmd", dir, req_splitline) {
 					answer += "> Script already exists."
 				} else {
 					index := 2
@@ -131,7 +131,7 @@ func cmd(req *mashiron.Request, conf *Conf, dir *mashiron.Dir) {
 						cmd.file = strings.TrimRight(cmd.file, "```")
 						out, _ := exec.Command(dir.CmdDir+"shchk.sh", cmd.file).Output()
 						answer += string(out)
-						mashiron.DB_AddBucket("sh", dir, cmd.name, [][]string{
+						mashiron.DB_AddBucket("cmd", dir, cmd.name, [][]string{
 							{"author", cmd.author},
 							{"cache", cmd.cache},
 							{"time", cmd.time},
@@ -147,8 +147,8 @@ func cmd(req *mashiron.Request, conf *Conf, dir *mashiron.Dir) {
 				req_split := strings.SplitN(req.Content, " ", 2)
 				if len(req_split) != 2 {
 					answer += "> Request split error."
-				} else if mashiron.DB_IfBucketExists("sh", dir, req_split[1]) {
-					i := mashiron.DB_GetBucket("sh", dir, req_split[1], []string{"author", "cache", "time", "file"})
+				} else if mashiron.DB_IfBucketExists("cmd", dir, req_split[1]) {
+					i := mashiron.DB_GetBucket("cmd", dir, req_split[1], []string{"author", "cache", "time", "file"})
 					info := Cmd{
 						name:   req_split[1],
 						author: i[0],
@@ -157,7 +157,7 @@ func cmd(req *mashiron.Request, conf *Conf, dir *mashiron.Dir) {
 						file:   i[3],
 					}
 					if info.author == req.User || mashiron.CheckPrivileges(req, &conf.priv_admin) {
-						mashiron.DB_DeleteBucket("sh", dir, req_split[1])
+						mashiron.DB_DeleteBucket("cmd", dir, req_split[1])
 						answer += "> Deleted `" + info.name + "` ."
 					} else {
 						answer += "> You are not allowed to delete this command."
@@ -170,8 +170,8 @@ func cmd(req *mashiron.Request, conf *Conf, dir *mashiron.Dir) {
 				req_split := strings.SplitN(req.Content, " ", 2)
 				if len(req_split) != 2 {
 					answer += "> Request split error."
-				} else if mashiron.DB_IfBucketExists("sh", dir, req_split[1]) {
-					i := mashiron.DB_GetBucket("sh", dir, req_split[1], []string{"author", "cache", "time", "file"})
+				} else if mashiron.DB_IfBucketExists("cmd", dir, req_split[1]) {
+					i := mashiron.DB_GetBucket("cmd", dir, req_split[1], []string{"author", "cache", "time", "file"})
 					info := Cmd{
 						name:   req_split[1],
 						author: i[0],
@@ -185,7 +185,7 @@ func cmd(req *mashiron.Request, conf *Conf, dir *mashiron.Dir) {
 				}
 			}
 			if strings.HasPrefix(req.Content, conf.prefix+"sh.ls") {
-				list := mashiron.DB_GetBucketList("sh", dir)
+				list := mashiron.DB_GetBucketList("cmd", dir)
 				if len(list) == 0 {
 					answer += "> There are no script in database."
 				} else {
@@ -203,7 +203,7 @@ func cmd(req *mashiron.Request, conf *Conf, dir *mashiron.Dir) {
 					req_split := strings.SplitN(req.Content, " ", 3)
 					if len(req_split) != 3 {
 						answer += "> Request split error."
-					} else if mashiron.DB_IfBucketExists("sh", dir, req_split[2]) {
+					} else if mashiron.DB_IfBucketExists("hook", dir, req_split[2]) {
 						_, err := regexp.Compile(req_split[1])
 						if err != nil {
 							answer += "> Regex error.\n" + err.Error()
@@ -245,8 +245,8 @@ func cmd(req *mashiron.Request, conf *Conf, dir *mashiron.Dir) {
 			if mashiron.CheckPrivileges(req, &conf.priv_run) {
 				req_split := strings.SplitN(req.Content, " ", 2)
 				req_cmd := strings.TrimLeft(req_split[0],conf.prefix+"sh.")
-				if mashiron.DB_IfBucketExists("sh", dir, req_cmd) {
-					i := mashiron.DB_GetBucket("sh", dir, req_cmd, []string{"author", "cache", "time", "file"})
+				if mashiron.DB_IfBucketExists("cmd", dir, req_cmd) {
+					i := mashiron.DB_GetBucket("cmd", dir, req_cmd, []string{"author", "cache", "time", "file"})
 					info := Cmd{
 						name:   req_cmd,
 						author: i[0],
