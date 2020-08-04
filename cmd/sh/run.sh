@@ -4,4 +4,4 @@
 # $4 => Options
 cd "$(dirname "$0")"
 . mashironrc
-systemd-nspawn --volatile --private-network --register=no -qD $VM /usr/container.sh "$1" "$2" ${@:3} 
+systemd-nspawn --volatile --private-network --register=no -qD $VM /usr/container.sh "$1" "$2" ${@:3}  2>/dev/null
