@@ -47,7 +47,7 @@ func main() {
 
 //create room data dirs and copy skel dir
 func setup(dir *mashiron.Dir) string {
-	content := "Mashiron setop:core\n"
+	content := "Mashiron setup:core\n"
 	err := os.MkdirAll(dir.CmdDataDir, 500)
 	if err != nil {
 		content += "WTF>>Can't create data dir...Aborting."

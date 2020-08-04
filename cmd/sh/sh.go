@@ -77,7 +77,7 @@ func cmd(req *mashiron.Request, conf *Conf, dir *mashiron.Dir) {
 					time:   b[1],
 					file:   b[2],
 					cache:  b[3],
-				})
+				}, options(req))
 			} else {
 				answer += "No such script in database.\n"
 			}
@@ -258,7 +258,7 @@ func cmd(req *mashiron.Request, conf *Conf, dir *mashiron.Dir) {
 					if len(req_split) > 1 {
 						v = req_split[1]
 					}
-					answer += vm(&v, dir, &info)
+					answer += vm(&v, dir, &info, options(req))
 				}
 			}
 		}
@@ -269,9 +269,9 @@ func cmd(req *mashiron.Request, conf *Conf, dir *mashiron.Dir) {
 	}))
 }
 
-func vm(req *string, dir *mashiron.Dir, cmd *Cmd) string{
+func vm(req *string, dir *mashiron.Dir, cmd *Cmd, opts string) string{
 	//Systemd-nspawn needs root priv.
-	c := exec.Command("sudo", append([]string{dir.CmdDir + "run.sh", cmd.file, ""}, strings.Split(*req, " ")...)...)
+	c := exec.Command("sudo", append([]string{dir.CmdDir + "run.sh", cmd.file, opts}, strings.Split(*req, " ")...)...)
 	var stdOut bytes.Buffer
 	c.Stdout = &stdOut
 	c.Stderr = &stdOut
@@ -282,4 +282,14 @@ func vm(req *string, dir *mashiron.Dir, cmd *Cmd) string{
 		return stdOut.String()
 	}
 	return ""
+}
+
+//Convert mashiron.Request opts to string
+func options(req *mashiron.Request) string {
+	r := ""
+	for _,v :=  range req.Options {
+		r += "export MSR_" + strings.ToUpper(req.Api + "_" + v[0]) + "=" + v[1] + "\n"
+	}
+	fmt.Fprint(os.Stderr, r)
+	return r
 }

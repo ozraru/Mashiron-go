@@ -68,6 +68,10 @@ func onMessageCreate(session *discordgo.Session, message *discordgo.MessageCreat
 		Content:    message.Content,
 		Version:    0,
 		Ishook:     false,
+		Options: [][]string{
+			{"CATEGORY",channel.ParentID},
+			{"USERNAME",message.Author.Username},
+		},
 	}
 	reqj := mashiron.RequestToJSON(&request)
 	cmdrun := exec.Command("cmd/cmd", reqj)

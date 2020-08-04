@@ -16,6 +16,7 @@ type Request struct {
 	User       string `json:"user"`
 	Privileges []string `json:"privileges"`
 	Content    string `json:"content"`
+	Options	[][]string `json:"options"`
 
 	//These are for core to each commands.
 	Version int
