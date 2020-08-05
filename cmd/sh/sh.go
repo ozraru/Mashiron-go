@@ -288,7 +288,7 @@ func vm(req *string, dir *mashiron.Dir, cmd *Cmd, opts string) string{
 func options(req *mashiron.Request) string {
 	r := ""
 	for _,v :=  range req.Options {
-		r += "export MSR_" + strings.ToUpper(req.Api + "_" + v[0]) + "=" + v[1] + "\n"
+		r += "export MSR_" + strings.ToUpper(req.Api + "_" + v[0]) + "=" + "'" + v[1] + "'\n"
 	}
 	fmt.Fprint(os.Stderr, r)
 	return r
