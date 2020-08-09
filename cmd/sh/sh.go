@@ -244,7 +244,7 @@ func cmd(req *mashiron.Request, conf *Conf, dir *mashiron.Dir) {
 			}
 			if mashiron.CheckPrivileges(req, &conf.priv_run) {
 				req_split := strings.SplitN(req.Content, " ", 2)
-				req_cmd := strings.TrimLeft(req_split[0],conf.prefix+"sh.")
+				req_cmd := strings.TrimPrefix(req_split[0],conf.prefix+"sh.")
 				if mashiron.DB_IfBucketExists("cmd", dir, req_cmd) {
 					i := mashiron.DB_GetBucket("cmd", dir, req_cmd, []string{"author", "cache", "time", "file"})
 					info := Cmd{
