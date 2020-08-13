@@ -106,7 +106,7 @@ func cmd(req mashiron.Request, conf Conf, dir mashiron.Dir) {
 						file: info_tmp[2],
 					}
 					if info.author == req.User || mashiron.CheckPrivileges(&req, &conf.priv_admin) {
-						mashiron.DB_DeleteBucket("man",&dir,req_split[1])
+						mashiron.DB_DeleteBucket("man",&dir,"",req_split[1])
 						answer += "> Deleted `" + info.name + "` ."
 					} else {
 						answer += "> You are not allowed to delete this command."

@@ -1,0 +1,8 @@
+Just take some votes.
+(If you changed prefix, change commands accordingly.)
+
+m.vote <number> : Vote! Ex: m.vote 0
+m.vote.start <title> <choices,,,> Start vote. Ex: m.vote.start Ready? Yes! No! Maybe
+m.vote.status Check vote status.
+m.vote.list <Page number> Check voters. Ex: m.vote.status 0
+m.vote.end End vote.

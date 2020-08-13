@@ -29,13 +29,16 @@ type Cmd struct {
 	cache  string
 }
 
+var defKeys = []string{"author", "time", "file", "cache"}
+const ModuleName = "sh"
+
 func main() {
 	req := mashiron.JSONToRequest(&os.Args[1])
 	if req.Version != 0 {
 		fmt.Fprint(os.Stderr, "[sh.go] FATAL:version error!")
 		return
 	}
-	dir := mashiron.GetDirList(&req,"sh")
+	dir := mashiron.GetDirList(&req,ModuleName)
 	conf := parseconf(&dir)
 	if mashiron.CheckPrivileges(&req, &conf.priv_run) {
 		cmd(&req, &conf, &dir)
@@ -51,11 +54,11 @@ func parseconf(dir *mashiron.Dir) Conf {
 		fmt.Fprint(os.Stderr, err.Error())
 	}
 	return Conf{
-		priv_edit:    c.Section("sh").Key("priv_conf").Strings(" "),
-		priv_run:     c.Section("sh").Key("priv_run").Strings(" "),
-		priv_regex:   c.Section("sh").Key("priv_regex").Strings(" "),
-		priv_admin:   c.Section("sh").Key("priv_admin").Strings(" "),
-		global_cache: c2.Section("sh").Key("cache").MustBool(),
+		priv_edit:    c.Section(ModuleName).Key("priv_conf").Strings(" "),
+		priv_run:     c.Section(ModuleName).Key("priv_run").Strings(" "),
+		priv_regex:   c.Section(ModuleName).Key("priv_regex").Strings(" "),
+		priv_admin:   c.Section(ModuleName).Key("priv_admin").Strings(" "),
+		global_cache: c2.Section(ModuleName).Key("cache").MustBool(),
 		prefix:       c.Section("core").Key("prefix").String(),
 	}
 }
@@ -67,10 +70,10 @@ func cmd(req *mashiron.Request, conf *Conf, dir *mashiron.Dir) {
 		mashiron.DB_CreateRootBacket(v, dir)
 	}
 	if req.Ishook {
-		for _, i := range mashiron.DB_Regex("hook",req.Content,dir) {
+		for _, i := range mashiron.DB_Regex("hook","",req.Content,dir) {
 			//run
 			if mashiron.DB_IfBucketExists("cmd",dir,i) {
-				b := mashiron.DB_GetBucket("cmd", dir, i, []string{"author", "time", "file", "cache"})
+				b := mashiron.DB_GetBucket("cmd", dir, i, defKeys)
 				answer += vm(&req.Content, dir, &Cmd{
 					name:   i,
 					author: b[0],
@@ -82,13 +85,13 @@ func cmd(req *mashiron.Request, conf *Conf, dir *mashiron.Dir) {
 				answer += "No such script in database.\n"
 			}
 		}
-	} else if strings.HasPrefix(req.Content, conf.prefix+"sh.") {
+	} else if strings.HasPrefix(req.Content, conf.prefix+ModuleName+".") {
 		//someone calls me
 		if mashiron.CheckPrivileges(req, &conf.priv_edit) {
-			if strings.HasPrefix(req.Content, conf.prefix+"sh.add ") {
+			if strings.HasPrefix(req.Content, conf.prefix+ModuleName+".add ") {
 				//add script
 				req_split := strings.SplitN(req.Content, " ", 4)
-				req_splitline := strings.TrimPrefix(strings.SplitN(req.Content, "\n", 2)[0], conf.prefix+"sh.add ")
+				req_splitline := strings.TrimPrefix(strings.SplitN(req.Content, "\n", 2)[0], conf.prefix+ModuleName+".add ")
 				req_splitline = strings.TrimSuffix(req_splitline, "```bash")
 				req_splitline = strings.TrimSuffix(req_splitline, "```sh")
 				req_splitline = strings.TrimSuffix(req_splitline, "```")
@@ -142,22 +145,22 @@ func cmd(req *mashiron.Request, conf *Conf, dir *mashiron.Dir) {
 					}
 				}
 			}
-			if strings.HasPrefix(req.Content, conf.prefix+"sh.rm ") {
+			if strings.HasPrefix(req.Content, conf.prefix+ModuleName+".rm ") {
 				//delete script
 				req_split := strings.SplitN(req.Content, " ", 2)
 				if len(req_split) != 2 {
 					answer += "> Request split error."
 				} else if mashiron.DB_IfBucketExists("cmd", dir, req_split[1]) {
-					i := mashiron.DB_GetBucket("cmd", dir, req_split[1], []string{"author", "cache", "time", "file"})
+					i := mashiron.DB_GetBucket("cmd", dir, req_split[1], defKeys)
 					info := Cmd{
 						name:   req_split[1],
 						author: i[0],
-						cache:  i[1],
-						time:   i[2],
-						file:   i[3],
+						time:  i[1],
+						file:   i[2],
+						cache:   i[3],
 					}
 					if info.author == req.User || mashiron.CheckPrivileges(req, &conf.priv_admin) {
-						mashiron.DB_DeleteBucket("cmd", dir, req_split[1])
+						mashiron.DB_DeleteBucket("cmd", dir, "", req_split[1])
 						answer += "> Deleted `" + info.name + "` ."
 					} else {
 						answer += "> You are not allowed to delete this command."
@@ -166,25 +169,25 @@ func cmd(req *mashiron.Request, conf *Conf, dir *mashiron.Dir) {
 					answer += "> No such command in database."
 				}
 			}
-			if strings.HasPrefix(req.Content, conf.prefix+"sh.info ") {
+			if strings.HasPrefix(req.Content, conf.prefix+ModuleName+".info ") {
 				req_split := strings.SplitN(req.Content, " ", 2)
 				if len(req_split) != 2 {
 					answer += "> Request split error."
 				} else if mashiron.DB_IfBucketExists("cmd", dir, req_split[1]) {
-					i := mashiron.DB_GetBucket("cmd", dir, req_split[1], []string{"author", "cache", "time", "file"})
+					i := mashiron.DB_GetBucket("cmd", dir, req_split[1], defKeys)
 					info := Cmd{
 						name:   req_split[1],
 						author: i[0],
-						cache:  i[1],
-						time:   i[2],
-						file:   i[3],
+						time:  i[1],
+						file:   i[2],
+						cache:   i[3],
 					}
 					answer += ">>> Name: `" + info.name + "`\nBy: `" + info.author + "`\nAt: `" + info.time + "`\nCache: `" + info.cache + "`\n File:```sh\n" + info.file + "```\n"
 				} else {
 					answer += "> No such script in database."
 				}
 			}
-			if strings.HasPrefix(req.Content, conf.prefix+"sh.ls") {
+			if strings.HasPrefix(req.Content, conf.prefix+ModuleName+".ls") {
 				list := mashiron.DB_GetBucketList("cmd", dir)
 				if len(list) == 0 {
 					answer += "> There are no script in database."
@@ -198,7 +201,7 @@ func cmd(req *mashiron.Request, conf *Conf, dir *mashiron.Dir) {
 				}
 			}
 			if mashiron.CheckPrivileges(req, &conf.priv_regex) {
-				if strings.HasPrefix(req.Content, conf.prefix+"sh.hook.add ") {
+				if strings.HasPrefix(req.Content, conf.prefix+ModuleName+".hook.add ") {
 					//add hook regex
 					req_split := strings.SplitN(req.Content, " ", 3)
 					if len(req_split) != 3 {
@@ -215,26 +218,26 @@ func cmd(req *mashiron.Request, conf *Conf, dir *mashiron.Dir) {
 						answer += "> No such script in database."
 					}
 				}
-				if strings.HasPrefix(req.Content, conf.prefix+"sh.hook.rm ") {
+				if strings.HasPrefix(req.Content, conf.prefix+ModuleName+".hook.rm ") {
 					//delete hook regex
 					req_split := strings.SplitN(req.Content, " ", 2)
 					if len(req_split) != 2 {
 						answer += "> Request split error."
 					} else if mashiron.DB_IfBucketExists("hook",dir,req_split[1]) {
-						mashiron.DB_DeleteBucket("hook",dir,req_split[1])
+						mashiron.DB_DeleteBucket("hook",dir, "",req_split[1])
 						answer += "> Deleted `" + req_split[1] + "`."
 					} else {
 						answer += "> No such regex in database."
 					}
 				}
-				if strings.HasPrefix(req.Content, conf.prefix+"sh.hook.ls") {
+				if strings.HasPrefix(req.Content, conf.prefix+ModuleName+".hook.ls") {
 					//hook listing
 					list := mashiron.DB_GetBucketList("hook", dir)
 					if len(list) == 0 {
 						answer += "> There are no regex in database."
 					} else {
 						answer += "> There are " + strconv.Itoa(len(list)) + " regex(s) in database.\n"
-						i,err := strconv.Atoi(strings.TrimLeft(req.Content, conf.prefix+"sh.hook.ls "))
+						i,err := strconv.Atoi(strings.TrimLeft(req.Content, conf.prefix+ModuleName+".hook.ls "))
 						if err != nil {
 							i = 0
 						}
@@ -244,15 +247,15 @@ func cmd(req *mashiron.Request, conf *Conf, dir *mashiron.Dir) {
 			}
 			if mashiron.CheckPrivileges(req, &conf.priv_run) {
 				req_split := strings.SplitN(req.Content, " ", 2)
-				req_cmd := strings.TrimPrefix(req_split[0],conf.prefix+"sh.")
+				req_cmd := strings.TrimPrefix(req_split[0],conf.prefix+ModuleName+".")
 				if mashiron.DB_IfBucketExists("cmd", dir, req_cmd) {
-					i := mashiron.DB_GetBucket("cmd", dir, req_cmd, []string{"author", "cache", "time", "file"})
+					i := mashiron.DB_GetBucket("cmd", dir, req_cmd, defKeys)
 					info := Cmd{
 						name:   req_cmd,
 						author: i[0],
-						cache:  i[1],
-						time:   i[2],
-						file:   i[3],
+						time:  i[1],
+						file:   i[2],
+						cache:   i[3],
 					}
 					v := ""
 					if len(req_split) > 1 {
