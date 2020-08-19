@@ -2,7 +2,8 @@ all: get test build mv
 test:
 	go test
 build:
-	go build discord.go
+	go build platforms/discord/discord.go
+	go build platforms/line/line.go
 	bash cmd/mkall.sh
 clean:
 	go clean
@@ -13,6 +14,7 @@ get:
 mv:
 	mkdir -p bin
 	mv discord bin/discord
+	mv line bin/line
 	cp -r skel bin/skel
 	cp mashiron.ini bin/
 	cp mashiron.service bin/

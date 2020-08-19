@@ -27,7 +27,7 @@ func main() {
 		panic(err)
 	}
 	Cnf := Config{
-		Token: c.Section("token").Key("secret").String(),
+		Token: c.Section("discord").Key("secret").String(),
 	}
 
 	log.Println("Connecting to discord...")

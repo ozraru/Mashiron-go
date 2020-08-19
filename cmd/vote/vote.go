@@ -43,22 +43,23 @@ func main() {
 					choices = append(choices, []string{strconv.Itoa(i), v})
 				}
 				mashiron.DB_AddBucket(ModuleName, &dir, BacketChoices, choices)
-				answer += "Vote started!\nTitle: " + arr[1] + mashiron.KVArrayPager(true, true, ": ", "", 0, choices) + "\n"
+				answer += "Vote started!\nTitle: `" + arr[1] + "`\n" + mashiron.KVArrayPager(true, true, ": ", "`", 0, choices) + "\n"
 				if len(arr) > 12 {
 					answer += "Please note that choices over 10 are not listed. If you want to view more, Just type`" + conf.Prefix + ModuleName + ".status`.\n"
 				}
 			}
 		} else if mashiron.DB_IfBucketExists(ModuleName, &dir, BacketInfo) {
 			if strings.HasPrefix(req.Content, conf.Prefix+ModuleName+".end") {
-				answer += "Vote ended! Here is the result!\n\n"
+				answer += "Vote ended! Here is the result!\nTitle: `" + mashiron.DB_GetBucket(ModuleName,&dir,BacketInfo,[]string{"title"})[0] + "`\n\n"
 				answer += result(mashiron.DB_GetFullKVList(ModuleName,&dir,BacketVotes),mashiron.DB_GetFullKVList(ModuleName,&dir,BacketChoices))
 				for _,v := range []string{BacketInfo,BacketVotes,BacketChoices} {
 					mashiron.DB_DeleteBucket(ModuleName,&dir,"",v)
 				}
 			} else if strings.HasPrefix(req.Content, conf.Prefix+ModuleName+".status") {
-				answer += "Current vote status:\n\n"
+				answer += "Current vote status:\nTitle: `" +  mashiron.DB_GetBucket(ModuleName,&dir,BacketInfo,[]string{"title"})[0] + "`\n\n"
 				answer += result(mashiron.DB_GetFullKVList(ModuleName,&dir,BacketVotes),mashiron.DB_GetFullKVList(ModuleName,&dir,BacketChoices))
 			} else if strings.HasPrefix(req.Content, conf.Prefix+ModuleName+".list") {
+				answer += "Listing voters!\nTitle: `" + mashiron.DB_GetBucket(ModuleName,&dir,BacketInfo,[]string{"title"})[0] + "`\n"
 				i := 0
 				if len(arr) == 2 {
 					t, err := strconv.Atoi(arr[1])
@@ -78,7 +79,7 @@ func main() {
 							mashiron.DB_DeleteBucket(ModuleName,&dir,BacketVotes, req.User)
 						}
 						mashiron.DB_AddBucket(ModuleName, &dir, BacketVotes, [][]string{{req.User, arr[1]}})
-						answer += "Voted!\n"
+						answer += "Voted to `" + mashiron.DB_GetBucket(ModuleName,&dir,BacketInfo,[]string{"title"})[0] + "` as `" + mashiron.DB_GetBucket(ModuleName,&dir,BacketChoices,[]string{arr[1]})[0] + "`!\n"
 					}
 				}
 			}
@@ -93,7 +94,7 @@ func result(votes [][]string, choices [][]string) string {
 	res := ""
 	for _,v := range choices {
 		a,_ := strconv.Atoi(v[0])
-		res += "No." + v[0] + " (" + v[1] + ") : " + strconv.Itoa(calc(a,votes)) + " votes\n"
+		res += "`" + v[0] + " (" + v[1] + ")` : `" + strconv.Itoa(calc(a,votes)) + " vote(s)`\n"
 	}
 	return res
 }
