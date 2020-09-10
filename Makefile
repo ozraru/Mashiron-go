@@ -11,6 +11,7 @@ clean:
 get:
 	go get gopkg.in/ini.v1
 	go get github.com/bwmarrin/discordgo
+	go get go.etcd.io/bbolt
 mv:
 	mkdir -p bin
 	mv discord bin/discord
