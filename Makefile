@@ -12,6 +12,7 @@ get:
 	go get gopkg.in/ini.v1
 	go get github.com/bwmarrin/discordgo
 	go get go.etcd.io/bbolt
+	go get github.com/line/line-bot-sdk-go/linebot
 mv:
 	mkdir -p bin
 	mv discord bin/discord
