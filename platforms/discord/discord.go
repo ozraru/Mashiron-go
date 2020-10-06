@@ -108,6 +108,9 @@ func sendMessage(s *discordgo.Session, c *discordgo.Channel, msg mashiron.Result
 	}
 	if msg.Attachments != nil {
 		for _,v := range msg.Attachments {
+			if v == "" {
+				break
+			}
 			f, err := ioutil.ReadFile(v)
 			if err != nil {
 				fmt.Fprint(os.Stderr,err)

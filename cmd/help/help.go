@@ -16,25 +16,27 @@ func main() {
 		fmt.Fprint(os.Stderr, "[help.go] FATAL:Version error!")
 		return
 	}
-	dir := mashiron.GetDirList(&req,"man")
+	dir := mashiron.GetDirList(&req,"help")
 	conf := mashiron.GetCoreConf(&dir)
 	if strings.HasPrefix(req.Content, conf.Prefix+"help") {
 		req_split := strings.SplitN(req.Content, " ", 2)
 		if len(req_split) != 2 {
 			answer += ">>> Welcome to Mashiron!\nIf you want to read help of each commands, type module name after this command!\nCurrently enabled commands are: "+ strings.Join(conf.Modules,",")
-			attachment = "cmd/help/mashiron.png"
+			attachment = dir.CmdDir + "mashiron.png"
 		} else {
-			path := "cmd/" + req_split[1] + "/README"
-			_, err := os.Stat(path)
-			if err == nil {
-				b, err := ioutil.ReadFile(path)
-				if err != nil {
-					fmt.Fprint(os.Stderr, "[help.go] ERROR:" + err.Error())
+			if !(strings.Contains(req_split[1], "..") || strings.Contains(req_split[1], "/")) {
+				path := "cmd/" + req_split[1] + "/README"
+				_, err := os.Stat(path)
+				if err == nil {
+					b, err := ioutil.ReadFile(path)
+					if err != nil {
+						fmt.Fprint(os.Stderr, "[help.go] ERROR:" + err.Error())
+					}
+					answer += string(b)
 				}
-				answer += string(b)
-			}
-			if os.IsNotExist(err) {
-				answer += "> Module `" + req_split[1] + "` does not exists."
+				if os.IsNotExist(err) {
+					answer += "> Module `" + req_split[1] + "` does not exists."
+				}
 			}
 		}
 	}

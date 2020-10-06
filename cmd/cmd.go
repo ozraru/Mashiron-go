@@ -71,7 +71,7 @@ func setup(dir *mashiron.Dir) string {
 
 //start process
 func start(req *mashiron.Request, dir *mashiron.Dir, ishook bool, cmd string) string {
-	if strings.Contains(cmd, "..") {
+	if strings.Contains(cmd, "..") || strings.Contains(cmd, "/") {
 		//For security
 		return mashiron.ResultToJSON(&mashiron.Result{
 			Attachments: nil,
