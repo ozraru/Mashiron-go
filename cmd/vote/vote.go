@@ -29,6 +29,7 @@ func main() {
 	if strings.HasPrefix(req.Content, conf.Prefix+ModuleName) {
 		mashiron.DB_CreateRootBacket(ModuleName, &dir)
 		arr := strings.Split(req.Content, " ")
+		autodelete := false
 		if strings.HasPrefix(req.Content, conf.Prefix+ModuleName+".start ") {
 			if len(arr) < 4 {
 				answer += "Not enough argument.\n"
@@ -73,6 +74,7 @@ func main() {
 					_, err := strconv.Atoi(arr[1])
 					if err != nil {
 						answer += "Invaild request!\n"
+						autodelete = true
 					} else {
 						chk := mashiron.DB_Regex(ModuleName,BacketVotes,req.User,&dir)
 						if len(chk) != 0 {
@@ -80,14 +82,22 @@ func main() {
 						}
 						mashiron.DB_AddBucket(ModuleName, &dir, BacketVotes, [][]string{{req.User, arr[1]}})
 						answer += "Voted to `" + mashiron.DB_GetBucket(ModuleName,&dir,BacketInfo,[]string{"title"})[0] + "` as `" + mashiron.DB_GetBucket(ModuleName,&dir,BacketChoices,[]string{arr[1]})[0] + "`!\n"
+						autodelete = true
 					}
 				}
 			}
 		} else {
 			answer += "Vote not found!\n"
 		}
+		var opt [][]string
+		if req.Api == "discord" && autodelete{
+			opt = [][]string{{"TIMEOUT", "3"}}
+		}
+		fmt.Print(mashiron.ResultToJSON(&mashiron.Result{
+			Content: answer,
+			Options: opt,
+		}))
 	}
-	fmt.Print(mashiron.ResultToJSON(&mashiron.Result{Content: answer}))
 }
 
 func result(votes [][]string, choices [][]string) string {

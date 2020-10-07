@@ -26,6 +26,7 @@ type Request struct {
 type Result struct {
 	Attachments []string `json:"attachments"`
 	Content    string `json:"content"`
+	Options	[][]string `json:"options"`
 }
 type Results struct {
 	Jsons []string `json:"jsons"`

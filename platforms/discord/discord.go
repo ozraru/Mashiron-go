@@ -10,6 +10,8 @@ import (
 	"mashironsrv.visualstudio.com/Public/_git/Mashiron-go/mashiron"
 	"os"
 	"os/exec"
+	"strconv"
+	"time"
 )
 
 var stopBot = make(chan bool)
@@ -99,11 +101,38 @@ func onMessageCreate(session *discordgo.Session, message *discordgo.MessageCreat
 
 //Send message
 func sendMessage(s *discordgo.Session, c *discordgo.Channel, msg mashiron.Result) {
+	timeout := 0
+	if msg.Options != nil {
+		for _,v := range msg.Options {
+			switch v[0] {
+			case "TIMEOUT":
+				t, err := strconv.Atoi(v[1])
+				if err != nil {
+					log.Println("Error while converting timeout string to int: ", err)
+					break
+				}
+				timeout = t
+			default:
+				break
+			}
+		}
+	}
 	//Don't send enpty message-will be denyed
 	if msg.Content != ""{
-		_, err := s.ChannelMessageSend(c.ID, msg.Content)
+		result, err := s.ChannelMessageSend(c.ID, msg.Content)
 		if err != nil {
-			log.Println("Error sending message: ", err)
+			log.Println("Error while sending message: ", err)
+		} else if timeout != 0 {
+			ch := make(chan bool, 1)
+			go func() {
+				time.Sleep(time.Duration(timeout) * time.Second)
+				ch <- true
+			}()
+			<-ch
+			err = s.ChannelMessageDelete(c.ID,result.ID)
+			if err != nil {
+				log.Println("Error while deleting message: ", err)
+			}
 		}
 	}
 	if msg.Attachments != nil {
