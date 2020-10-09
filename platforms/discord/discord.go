@@ -49,7 +49,7 @@ func main() {
 	return
 }
 
-//Start core cmd when recieved message
+//Start core cmd when received message
 func onMessageCreate(session *discordgo.Session, message *discordgo.MessageCreate) {
 
 	channel, err := session.State.Channel(message.ChannelID) //チャンネル取得
@@ -95,31 +95,44 @@ func onMessageCreate(session *discordgo.Session, message *discordgo.MessageCreat
 	log.Println(resultArr)
 		for _,v := range resultArr {
 			r := mashiron.JSONToResult(&v)
-			sendMessage(session, channel, r)
+			sendMessage(session, message, r)
 	}
 }
 
 //Send message
-func sendMessage(s *discordgo.Session, c *discordgo.Channel, msg mashiron.Result) {
+func sendMessage(session *discordgo.Session, message *discordgo.MessageCreate, result mashiron.Result) {
 	timeout := 0
-	if msg.Options != nil {
-		for _,v := range msg.Options {
-			switch v[0] {
+	if result.Options != nil {
+		for _, option := range result.Options {
+			switch option[0] {
 			case "TIMEOUT":
-				t, err := strconv.Atoi(v[1])
+				v, err := strconv.Atoi(option[1])
 				if err != nil {
 					log.Println("Error while converting timeout string to int: ", err)
 					break
 				}
-				timeout = t
+				timeout = v
+			case "DELETE":
+				v, err := strconv.ParseBool(option[1])
+				if err != nil {
+					log.Println("Error while converting timeout string to int: ", err)
+					break
+				}
+				if v == true {
+					err = session.ChannelMessageDelete(message.ChannelID,message.ID)
+					if err != nil {
+						log.Println("Error while deleting message: ", err)
+						break
+					}
+				}
 			default:
 				break
 			}
 		}
 	}
-	//Don't send enpty message-will be denyed
-	if msg.Content != ""{
-		result, err := s.ChannelMessageSend(c.ID, msg.Content)
+	//Don't send empty message - Will be denied
+	if result.Content != ""{
+		result, err := session.ChannelMessageSend(message.ChannelID, result.Content)
 		if err != nil {
 			log.Println("Error while sending message: ", err)
 		} else if timeout != 0 {
@@ -129,14 +142,14 @@ func sendMessage(s *discordgo.Session, c *discordgo.Channel, msg mashiron.Result
 				ch <- true
 			}()
 			<-ch
-			err = s.ChannelMessageDelete(c.ID,result.ID)
+			err = session.ChannelMessageDelete(message.ChannelID,result.ID)
 			if err != nil {
 				log.Println("Error while deleting message: ", err)
 			}
 		}
 	}
-	if msg.Attachments != nil {
-		for _,v := range msg.Attachments {
+	if result.Attachments != nil {
+		for _,v := range result.Attachments {
 			if v == "" {
 				break
 			}
@@ -145,7 +158,7 @@ func sendMessage(s *discordgo.Session, c *discordgo.Channel, msg mashiron.Result
 				fmt.Fprint(os.Stderr,err)
 				return
 			}
-			s.ChannelFileSend(c.ID,v,bytes.NewBuffer(f))
+			session.ChannelFileSend(message.ChannelID,v,bytes.NewBuffer(f))
 		}
 	}
 }

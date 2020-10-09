@@ -188,3 +188,12 @@ func GetCoreConf(dir *Dir) CoreConf {
 		Privileges_Run:  c.Section("core").Key("priv_run").Strings(" "),
 	}
 }
+
+func ModuleConfig(dir *Dir,module string, keys []string) map[string]string {
+	c, _ := ini.Load(dir.RoomDir + "user.ini")
+	conf := make(map[string]string, len(keys))
+	for _,i := range keys {
+		conf[i] = c.Section(module).Key(i).String()
+	}
+	return conf
+}

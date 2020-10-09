@@ -73,7 +73,7 @@ func main() {
 				if mashiron.DB_IfBucketExists(ModuleName, &dir, BacketInfo) {
 					_, err := strconv.Atoi(arr[1])
 					if err != nil {
-						answer += "Invaild request!\n"
+						answer += "Invalid request!\n"
 						autodelete = true
 					} else {
 						chk := mashiron.DB_Regex(ModuleName,BacketVotes,req.User,&dir)
@@ -89,9 +89,20 @@ func main() {
 		} else {
 			answer += "Vote not found!\n"
 		}
+
 		var opt [][]string
-		if req.Api == "discord" && autodelete{
-			opt = [][]string{{"TIMEOUT", "3"}}
+		secret := false
+		moduleConfig := mashiron.ModuleConfig(&dir, "vote", []string{"secret"})
+		if moduleConfig["secret"] != "" {
+			s, err := strconv.ParseBool(moduleConfig["secret"])
+			if err != nil {
+				answer += "**Warning: Invalid config detected.**"
+			} else {
+				secret = s
+			}
+		}
+		if req.Api == "discord" && autodelete &&  secret == true{
+			opt = [][]string{{"TIMEOUT", "3"},{"DELETE", "true"}}
 		}
 		fmt.Print(mashiron.ResultToJSON(&mashiron.Result{
 			Content: answer,
