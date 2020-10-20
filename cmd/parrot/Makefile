@@ -19,7 +19,7 @@ party:
 	mv cultofthepartyparrot.com/guests/*.gif parrots
 	rm cultofthepartyparrot.com -rf
 	mkdir -p ../../bin/cmd/parrot/parrots
-	mv parrots ../../bin/cmd/parrot/parrots
+	mv parrots ../../bin/cmd/parrot
 
 mv:
 	mkdir -p ../../bin/cmd/parrot
