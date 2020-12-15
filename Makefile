@@ -23,5 +23,4 @@ mv:
 	cp mashiron.sh bin/
 	cp ascii.txt bin/
 release: clean all
-	sudo tar -Jcvf Mashiron-go.tar.xz bin/*
-
+	sudo 7zr a -mx=9 Mashiron-go.7z bin
