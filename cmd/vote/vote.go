@@ -33,6 +33,8 @@ func main() {
 		if strings.HasPrefix(req.Content, conf.Prefix+ModuleName+".start ") {
 			if len(arr) < 4 {
 				answer += "Not enough argument.\n"
+			}else if mashiron.DB_IfBucketExists(ModuleName, &dir, BacketInfo) {
+				answer += "Another vote is currently ongoing!\n"
 			} else {
 				mashiron.DB_AddBucket(ModuleName, &dir, BacketInfo, [][]string{
 					{"title", arr[1]},
