@@ -1,6 +1,4 @@
-all: get test build mv
-test:
-	go test
+all: get build mv
 build:
 	go build platforms/discord/discord.go
 	go build platforms/line/line.go
