@@ -92,9 +92,12 @@ func onMessageCreate(session *discordgo.Session, message *discordgo.MessageCreat
 	o := stdOut.String()
 	 //fmt.Println(reqj + "\n=>\n" +o) //Just uncomment this for debugging!
 	resultArr := mashiron.JSONToResults(&o)
-	log.Println(resultArr)
 		for _,v := range resultArr {
 			r := mashiron.JSONToResult(&v)
+			//logging
+			if !(r.Attachments == nil && r.Content == "") {
+				log.Println(v)
+			}
 			sendMessage(session, message, r)
 	}
 }
