@@ -29,4 +29,4 @@ then
 fi
 EOF
 chmod +x $VM/usr/container.sh
-sudo mv vm ../../bin/cmd/sh/vm
+mv vm ../../bin/cmd/sh/vm

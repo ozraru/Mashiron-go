@@ -7,6 +7,7 @@ clean:
 	go clean
 #	sudo rm -rf bin
 get:
+	echo "module mashironsrv.visualstudio.com/Public/_git/Mashiron-go" > go.mod
 	go get gopkg.in/ini.v1
 	go get github.com/bwmarrin/discordgo
 	go get go.etcd.io/bbolt

@@ -4,7 +4,7 @@ test:
 build:
 	mkdir -p ../../bin/cmd/sh
 	go build
-	sudo bash init.sh
+	sudo ./init.sh
 clean:
 	go clean
 get:
@@ -17,5 +17,4 @@ mv:
 	cp run.sh ../../bin/cmd/sh/run.sh
 	cp README ../../bin/cmd/sh/README
 	cp Makefile ../../bin/cmd/sh/Makefile
-init:
-	./init.sh
+
