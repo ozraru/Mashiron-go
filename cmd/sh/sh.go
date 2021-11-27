@@ -103,34 +103,30 @@ func cmd(req *mashiron.Request, conf *Conf, dir *mashiron.Dir) {
 				if mashiron.DB_IfBucketExists("cmd", dir, req_splitline) {
 					answer += "> Script already exists."
 				} else {
-					index := 2
 					cmd := Cmd{
 						author: req.User,
 						cache:  "true",
 						time:   time.Now().String(),
 						name:   req_splitline,
 					}
-					if req_split[index] == "--no-cache" {
+					if len(req_split) >= 3 && req_split[2] == "--no-cache" {
 						cmd.cache = "false"
 					} else {
 						cmd.cache = "true"
 					}
 					//trim
 					cmdtmp := strings.SplitN(req.Content, "\n", 3)
-					c := 0
-					skip := false
-					for {
-						if strings.HasSuffix(cmdtmp[c], "```sh") || strings.HasSuffix(cmdtmp[c], "```") {
+					skip := true
+					for c, v := range cmdtmp {
+						if strings.HasSuffix(v, "```sh") || strings.HasSuffix(v, "```") {
 							cmd.file = strings.Join(cmdtmp[c+1:], "\n")
+							skip = false
 							break
-						} else if c == 3 {
-							answer += "> Cannot find script...?"
-							skip = true
-						} else {
-							c++
 						}
 					}
-					if !skip {
+					if skip {
+						answer += "> Cannot find script...?"
+					} else {
 						cmd.file = strings.TrimRight(cmd.file, "```")
 						out, _ := exec.Command(dir.CmdDir+"shchk.sh", cmd.file).Output()
 						answer += string(out)
