@@ -90,55 +90,37 @@ func cmd(req *mashiron.Request, conf *Conf, dir *mashiron.Dir) {
 		if mashiron.CheckPrivileges(req, &conf.priv_edit) {
 			if strings.HasPrefix(req.Content, conf.prefix+ModuleName+".add ") {
 				//add script
-				req_split := strings.SplitN(req.Content, " ", 4)
-				req_splitline := strings.TrimPrefix(strings.SplitN(req.Content, "\n", 2)[0], conf.prefix+ModuleName+".add ")
-				req_splitline = strings.TrimSuffix(req_splitline, "```bash")
-				req_splitline = strings.TrimSuffix(req_splitline, "```sh")
-				req_splitline = strings.TrimSuffix(req_splitline, "```")
-				req_splitline = strings.TrimSuffix(req_splitline, " ")
-				if strings.HasSuffix(req_split[0], "\n") || req_splitline == "" {
+				addexp, _ := regexp.Compile("(?s)" + conf.prefix + ModuleName + ".add ([^ ]*?)( --no-cache)?( --overwrite)?\n?```(bash\n|sh\n|\n)?(.*)```") // 1:name, 5:script
+				matched := addexp.FindStringSubmatch(req.Content)
+				if matched == nil {
+					answer += "> Cannot find script...? (Syntax Error)"
+				} else if matched[1] == "" {
 					answer += "> Please include script name before file."
-					return
-				}
-				if mashiron.DB_IfBucketExists("cmd", dir, req_splitline) {
+				} else if matched[3] == "" && mashiron.DB_IfBucketExists("cmd", dir, matched[1]) {
 					answer += "> Script already exists."
 				} else {
 					cmd := Cmd{
 						author: req.User,
 						cache:  "true",
 						time:   time.Now().String(),
-						name:   req_splitline,
+						name:   matched[1],
 					}
-					if len(req_split) >= 3 && req_split[2] == "--no-cache" {
+					if matched[2] == " --no-cache" {
 						cmd.cache = "false"
 					} else {
 						cmd.cache = "true"
 					}
-					//trim
-					cmdtmp := strings.SplitN(req.Content, "\n", 3)
-					skip := true
-					for c, v := range cmdtmp {
-						if strings.HasSuffix(v, "```sh") || strings.HasSuffix(v, "```") {
-							cmd.file = strings.Join(cmdtmp[c+1:], "\n")
-							skip = false
-							break
-						}
-					}
-					if skip {
-						answer += "> Cannot find script...?"
-					} else {
-						cmd.file = strings.TrimRight(cmd.file, "```")
-						out, _ := exec.Command(dir.CmdDir+"shchk.sh", cmd.file).Output()
-						answer += string(out)
-						mashiron.DB_AddBucket("cmd", dir, cmd.name, [][]string{
-							{"author", cmd.author},
-							{"cache", cmd.cache},
-							{"time", cmd.time},
-							{"name", cmd.name},
-							{"file", cmd.file},
-						})
-						answer += "> Added script. Type `" + conf.prefix + "sh.info " + cmd.name + "` for details."
-					}
+					cmd.file = matched[5]
+					out, _ := exec.Command(dir.CmdDir+"shchk.sh", cmd.file).Output()
+					answer += string(out)
+					mashiron.DB_AddBucket("cmd", dir, cmd.name, [][]string{
+						{"author", cmd.author},
+						{"cache", cmd.cache},
+						{"time", cmd.time},
+						{"name", cmd.name},
+						{"file", cmd.file},
+					})
+					answer += "> Added script. Type `" + conf.prefix + "sh.info " + cmd.name + "` for details."
 				}
 			}
 			if strings.HasPrefix(req.Content, conf.prefix+ModuleName+".rm ") {
