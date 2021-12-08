@@ -13,6 +13,7 @@ Usrge:
 
  **Options:**
   **`--no-cache`**  Set this if your command has diffrent outputs for requests with same strings. 
+  **`--overwrite`**  Set this to overwrite exist scripts. 
 
  sh.add <name>
  \`\`\`sh
@@ -58,7 +59,7 @@ Ex: sh.hook.rm .
 sh.hook.ls <Option:page>
 Ex: sh.hook.ls 1
 ```
-**sh.<cmd>**: **`Triggers UserScripts.**`
+**sh.<cmd>**: **`Triggers UserScripts.`**
 ```
 sh.<cmd> <args>
 Ex: sh.echo discord
